@@ -1,4 +1,12 @@
 # Next
+### Changed
+- **Breaking Change** `Endpoint.init` so it doesn't have any default arguments (removing default argument `.get` for `method` parameter and `nil` for  `httpHeaderFields` parameter). [#1289](https://github.com/Moya/Moya/pull/1289) by [@sunshinejr](https://github.com/sunshinejr).
+- **Breaking Change** `NetworkActivityPlugin` so its `networkActivityClosure` has now `target: TargetType` argument in addition to `change: NetworkActivityChangeType`. [#1290](https://github.com/Moya/Moya/pull/1290) by [@sunshinejr](https://github.com/sunshinejr).
+
+# 9.0.0
+- Removed default value for task from `Endpoint` initializer
+
+# 9.0.0-beta.1
 - **Breaking Change** Replaced `parameters` & `parameterEncoding` in `TargetType` with extended `Task` cases.
 - **Breaking Change** Flattened `UploadType` and `DownloadType` into `Task` cases.
 - **Breaking Change** Replaced `shouldAuthorize: Bool` in `AccessTokenAuthorizable` with `authorizationType: AuthorizationType`.

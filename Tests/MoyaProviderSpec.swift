@@ -112,9 +112,12 @@ class MoyaProviderSpec: QuickSpec {
 
         it("notifies at the beginning of network requests") {
             var called = false
-            let plugin = NetworkActivityPlugin { (change) -> Void in
+            var calledTarget: GitHub?
+
+            let plugin = NetworkActivityPlugin { change, target in
                 if change == .began {
                     called = true
+                    calledTarget = target as? GitHub
                 }
             }
 
@@ -123,13 +126,17 @@ class MoyaProviderSpec: QuickSpec {
             provider.request(target) { _ in  }
 
             expect(called) == true
+            expect(calledTarget) == target
         }
 
         it("notifies at the end of network requests") {
             var called = false
-            let plugin = NetworkActivityPlugin { (change) -> Void in
+            var calledTarget: GitHub?
+
+            let plugin = NetworkActivityPlugin { change, target in
                 if change == .ended {
                     called = true
+                    calledTarget = target as? GitHub
                 }
             }
 
@@ -138,6 +145,7 @@ class MoyaProviderSpec: QuickSpec {
             provider.request(target) { _ in  }
 
             expect(called) == true
+            expect(calledTarget) == target
         }
 
         describe("a provider with delayed stubs") {
@@ -384,7 +392,7 @@ class MoyaProviderSpec: QuickSpec {
             it("returns sample data") {
                 let endpointResolution: MoyaProvider<GitHub>.EndpointClosure = { target in
                     let url = target.baseURL.appendingPathComponent(target.path).absoluteString
-                    return Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task)
+                    return Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task, httpHeaderFields: target.headers)
                 }
                 let provider = MoyaProvider<GitHub>(endpointClosure: endpointResolution, stubClosure: MoyaProvider.immediatelyStub)
 
@@ -402,7 +410,7 @@ class MoyaProviderSpec: QuickSpec {
                 let response = HTTPURLResponse(url: URL(string: "http://example.com")!, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
                 let endpointResolution: MoyaProvider<GitHub>.EndpointClosure = { target in
                     let url = target.baseURL.appendingPathComponent(target.path).absoluteString
-                    return Endpoint(url: url, sampleResponseClosure: { .response(response, Data()) }, method: target.method, task: target.task)
+                    return Endpoint(url: url, sampleResponseClosure: { .response(response, Data()) }, method: target.method, task: target.task, httpHeaderFields: target.headers)
                 }
                 let provider = MoyaProvider<GitHub>(endpointClosure: endpointResolution, stubClosure: MoyaProvider.immediatelyStub)
 
@@ -420,7 +428,7 @@ class MoyaProviderSpec: QuickSpec {
                 let error = NSError(domain: "Internal iOS Error", code: -1234, userInfo: nil)
                 let endpointResolution: MoyaProvider<GitHub>.EndpointClosure = { target in
                     let url = target.baseURL.appendingPathComponent(target.path).absoluteString
-                    return Endpoint(url: url, sampleResponseClosure: { .networkError(error) }, method: target.method, task: target.task)
+                    return Endpoint(url: url, sampleResponseClosure: { .networkError(error) }, method: target.method, task: target.task, httpHeaderFields: target.headers)
                 }
                 let provider = MoyaProvider<GitHub>(endpointClosure: endpointResolution, stubClosure: MoyaProvider.immediatelyStub)
 
